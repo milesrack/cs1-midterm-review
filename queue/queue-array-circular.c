@@ -1,15 +1,15 @@
 #include <stdio.h>
 #define MAX 10
 
+int queue[MAX];
+int front = -1;
+int size = 0;
+
 void enqueue(int val);
 int dequeue();
 int empty();
 int full();
 void print();
-
-int queue[MAX];
-int front = -1;
-int rear = -1;
 
 int main(){
     for (int i = 0; i < MAX; i++){
@@ -21,6 +21,11 @@ int main(){
         dequeue();
     }
     dequeue();
+    for (int i = 0; i < MAX; i++){
+        enqueue(i);
+        print();
+    }
+    enqueue(MAX);
     return 0;
 }
 
@@ -29,29 +34,39 @@ void enqueue(int val){
         printf("Queue is full!\n");
         return;
     }
+    
     if (empty()){
         front = 0;
     }
-    queue[++rear] = val;
+    
+    queue[(front + size) % MAX] = val;
+    size++;
 }
 
 int dequeue(){
-    if (empty() || front > rear){
+    int val;
+
+    if (empty()){
         printf("Queue is empty!\n");
         return -1;
     }
-    return queue[front++];
+
+    val = queue[front];
+    front = (front + 1) % MAX;
+    size--;
+    
+    return val;
 }
 
 int empty(){
-    if (front == -1){
+    if (size == 0){
         return 1;
     }
     return 0;
 }
 
 int full(){
-    if (rear == MAX - 1){
+    if (size == MAX){
         return 1;
     }
     return 0;
@@ -62,8 +77,8 @@ void print(){
         printf("Queue is empty!\n");
         return;
     }
-    for (int i = front; i <= rear; i++){
-        printf("%d ", queue[i]);
+    for (int i = 0; i < size; i++){
+        printf("%d ", queue[(front + i) % MAX]);
     }
     printf("\n");
 }
